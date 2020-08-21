@@ -2,6 +2,11 @@ package main
 // 13 min
 import (
 	"fmt"
+	"os"
+	"strings"
+
+	//"strings"
+
 	//"os"
 	"net/http"
 	"strconv"
@@ -11,7 +16,7 @@ import (
 func HttpGet(url string)(result string, err error) {
 
 	respon, err1 := http.Get(url)
-	if err1 != nil{
+	if err1 != nil {
 		err = err1
 
 		return
@@ -35,11 +40,12 @@ func HttpGet(url string)(result string, err error) {
 }
 
 
-func SpiderPage(i int ){
+func SpiderPage(i int , page chan int){
 
 	//https://www.pengfue.com/index_3.html
 	url := "https://www.pengfue.com/index_" + strconv.Itoa(i) + ".html"
 	fmt.Printf("开始爬取第%d页的网址%s\n",i,url)
+
 
 	result, err := HttpGet(url)
 
@@ -63,6 +69,11 @@ func SpiderPage(i int ){
 
 	//fmt.Println("result = ", result)
 
+	// 将字符串写入 文件中
+	fileTitle := make([] string, 0)
+	fileContent := make([] string, 0)
+
+
 	//取出关键信息
 	joyUrls := re.FindAllStringSubmatch(result, -1) //n 为正数， 查找前n个匹配项， n为 -1， 查找全部匹配项
 
@@ -79,11 +90,50 @@ func SpiderPage(i int ){
 			continue
 		}
 
-		fmt.Println("title = ", title)
-		fmt.Println("content = ",content)
+		fileTitle = append(fileTitle, title)
+		fileContent = append(fileContent, content)
+		//fmt.Println("title = #", title)
+		//fmt.Println("content = #",content)
 	}
+
+	//把内容写入到文件中
+	StoreJoyToFile(i, fileTitle, fileContent)
+
+	page <- i
 	//fmt.Println(result)
 }
+
+func StoreJoyToFile(i int, title []string, content []string) {
+
+	//新建文件
+	filename, err := os.Create(strconv.Itoa(i) + ".txt")
+
+	if err != nil{
+		fmt.Println("os Create err = ", err)
+		return
+	}
+
+	defer filename.Close()
+
+	//写内容
+
+	n := len(title)
+
+	for i := 0 ; i < n ; i++ {
+
+		//写标题
+		filename.WriteString("《" + title[i] + "》" + "\n\n")
+		//写内容
+		filename.WriteString(content[i] + "\n")
+
+		filename.WriteString( "\n=====================\n")
+
+
+	}
+
+
+}
+
 
 func SpiderOneJoy(url string) (title, content string,err error ) {
 
@@ -113,6 +163,9 @@ func SpiderOneJoy(url string) (title, content string,err error ) {
 	for _,data := range tmpTitle{
 
 		title = data[1]
+
+		title = strings.Replace(title, "\t", "", -1)
+		title = strings.Replace(title, "<", "", -1)
 		//fmt.Println("title == ",data[1])
 		break
 	}
@@ -133,6 +186,9 @@ func SpiderOneJoy(url string) (title, content string,err error ) {
 	for _, data := range tmpmessage{
 
 		content = data[1]
+		content = strings.Replace(content, "\t", "", -1)
+		content = strings.Replace(content, "\n", "", -1)
+
 		break
 	}
 
@@ -142,9 +198,15 @@ func SpiderOneJoy(url string) (title, content string,err error ) {
 
 func DoWork(start, end int){
 
+	page := make(chan int)
 	fmt.Println("开始爬取第%d页到%d页的网址",start,end)
 	for i := start; i <= end; i++ {
-		SpiderPage(i)
+		go SpiderPage(i, page)
+	}
+
+	for i := start ; i <= end ; i++ {
+
+		fmt.Println("第几页爬去完毕", <-page)
 	}
 
 }
