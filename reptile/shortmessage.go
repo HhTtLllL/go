@@ -99,7 +99,7 @@ func SpiderPage(i int , page chan int){
 	//把内容写入到文件中
 	StoreJoyToFile(i, fileTitle, fileContent)
 
-	page <- i
+	page <- 1
 	//fmt.Println(result)
 }
 

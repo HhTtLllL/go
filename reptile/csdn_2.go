@@ -13,34 +13,41 @@ import (
 
 func main(){
 
-	url := "https://blog.csdn.net/qq_43701555"
+	url := "https://blog.csdn.net/qq_43701555"  //博客地址
 	url_list := url + "/article/list/"
 
 	fmt.Println("开始爬取")
 
 	//总数计算
 	count := 0
-
 	//i 为第几页
 	i := 1
+	page := make(chan int)
 	for {
+
+		var n int
 
 		url_tmp := url_list
 		url_tmp += strconv.Itoa(i)
 
 	//	fmt.Println("i = ",i)
 	//	fmt.Println("url = ", url_tmp)
-		n := dowok(count, url_tmp)
+		 dowok(url_tmp,&n,page)
 
 		if  n == 0 {
 
 			fmt.Println("全部爬去完毕")
 			break
 		}
-
 		count += n
 
 		i++
+	//	<-page
+	}
+
+	for i := 0; i < 44; i ++ {
+
+		<- page
 	}
 
 	if count == 0 {
@@ -51,9 +58,9 @@ func main(){
 	fmt.Println("共爬取 ", count, "篇博客")
 }
 
-func dowok(num int, url_list string) int{
+func dowok(url_list string, num *int, page chan int) {
 
-	n := 0
+	//n := 0
 
 	result := httpGet(url_list)
 
@@ -61,19 +68,12 @@ func dowok(num int, url_list string) int{
 	if strings.Contains(result, "空空如也"){
 
 	//	fmt.Println("")
-		return n
+		return
 	}
 
 	//处理两次
 	ever_url := deal(result)
 	ever_only_url  := deal_2(ever_url)
-
-
-	/*for _, data := range ever_url{
-
-		fmt.Printf("data = %s\n",data)
-		//return 0
-	}*/
 
 	count := 0;
 
@@ -94,8 +94,10 @@ func dowok(num int, url_list string) int{
 	}
 
 
+	*num = count
+	page <- 1
 	//fmt.Println(i , "\n")
-	return count
+	return
 }
 
 func httpGet(url_list string) (result string){
@@ -204,10 +206,15 @@ func deal_page(url string)  (string , string) {
 	}
 
 
+	// data 有两个数值[0],[1]
+	/*
+		data[0] : 带有正则表达式 的字符串
+		data[1] : 仅中间匹配到的数据，不带有 正则时的 匹配字符串
+	*/
 	for _, data := range rtext {
 
 		text = data[1]
-		fmt.Println(data[1])
+	//	fmt.Println(data[1])
 	}
 
 	return title, text
