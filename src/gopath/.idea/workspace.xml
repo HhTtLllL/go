@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="5fd412f0-fcd8-41c2-b145-cbdfb1692ca0" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="GOROOT" path="/usr/local/go" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectId" id="1gJOweEkIUL5QZaPQ6qmVKQqc2c" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="go.import.settings.migrated" value="true" />
+    <property name="go.sdk.automatically.set" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/.." />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors" />
+  </component>
+  <component name="ServiceViewManager">
+    <option name="viewStates">
+      <list>
+        <serviceView>
+          <treeState>
+            <expand />
+            <select />
+          </treeState>
+        </serviceView>
+      </list>
+    </option>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="VgoProject">
+    <integration-enabled>true</integration-enabled>
+    <proxy>https://mirrors.aliyun.com/goproxy/</proxy>
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="545" y="276" width="800" height="684" key="#Custom_Plugin_Repositories" timestamp="1597831438966">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="545" y="276" width="800" height="684" key="#Custom_Plugin_Repositories/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1597831438966" />
+    <state x="459" y="176" width="800" height="684" key="#HTTP_Proxy" timestamp="1597831456216">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="459" y="176" width="800" height="684" key="#HTTP_Proxy/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1597831456216" />
+    <state x="589" y="268" width="687" height="494" key="#com.intellij.ide.actions.DebugLogConfigureAction" timestamp="1597994032276">
+      <screen x="0" y="0" width="1920" height="999" />
+    </state>
+    <state x="589" y="268" width="687" height="494" key="#com.intellij.ide.actions.DebugLogConfigureAction/0.0.1920.999/1920.0.1920.1080@0.0.1920.999" timestamp="1597994032276" />
+    <state x="641" y="127" key="FileChooserDialogImpl" timestamp="1597994561783">
+      <screen x="0" y="0" width="1920" height="999" />
+    </state>
+    <state x="641" y="127" key="FileChooserDialogImpl/0.0.1920.999/1920.0.1920.1080@0.0.1920.999" timestamp="1597994561783" />
+    <state x="355" y="0" width="1352" height="999" key="SettingsEditor" timestamp="1597988119943">
+      <screen x="0" y="0" width="1920" height="999" />
+    </state>
+    <state x="355" y="0" width="1352" height="999" key="SettingsEditor/0.0.1920.999/1920.0.1920.1080@0.0.1920.999" timestamp="1597988119943" />
+    <state x="519" y="296" width="962" height="737" key="SettingsEditor/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1597832496943" />
+    <state x="647" y="310" width="585" height="622" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1597831326144">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="647" y="310" width="585" height="622" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/67.27.1853.1053/1920.0.1920.1080@67.27.1853.1053" timestamp="1597831326144" />
+  </component>
+</project>
