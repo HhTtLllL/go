@@ -86,9 +86,9 @@ func dowok(num int, url_list string) int{
 		count++
 
 
-		text := deal_page(ever_only_url[i])
+		title, text := deal_page(ever_only_url[i])
 
-		writePage(num + i + 1, text)
+		writePage(title, text)
 		//fmt.Println("len1 = ", len(ever_only_url[i]))
 		//fmt.Println("每一篇博客的url" + "  " +  ever_only_url[i])
 	}
@@ -173,40 +173,50 @@ func deal_2(ever_url [][]string) []string {
 
 
 
-func deal_page(url string)  string {
+func deal_page(url string)  (string , string) {
 
 	var text string
+	var title string
 
 	result := httpGet(url)
 	//var url [][]string
 
-	re := regexp.MustCompile(`</svg>(?s:(.*?))</div>`)
+
+	retitle := regexp.MustCompile(`var articleTitle = "(?s:(.*?))";`)
+
+	retext := regexp.MustCompile(`</svg>(?s:(.*?))</div>
+                <link href`)
+
 
 	//re := regexp.MustCompile(`<a href="(?s:(.*?))" target="_blank">`)
 	//	fmt.Printf("re = %s\n",re)
 
-	if re == nil {
+	if retext == nil {
 		fmt.Println("爬去每一页时失败")
-		return text
+		return title, text
+	}
+
+	rtitle := retitle.FindAllStringSubmatch(result, -1)
+	rtext := retext.FindAllStringSubmatch(result, 1)
+
+	for _, data := range rtitle {
+		title = data[1]
 	}
 
 
-	content := re.FindAllStringSubmatch(result, 1)
+	for _, data := range rtext {
 
-
-	for _, data := range content {
-
-		 text = data[1]
-		//fmt.Printf("%T",data[1])
+		text = data[1]
+		fmt.Println(data[1])
 	}
 
-	return text
+	return title, text
 }
 
 
-func writePage(count int, text string) {
+func writePage(title string, text string) {
 
-	fileName:= strconv.Itoa(count) + ".html"
+	fileName :=  title + ".html"
 
 	f, err := os.Create(fileName)
 
