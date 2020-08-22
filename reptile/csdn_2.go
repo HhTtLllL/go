@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -29,7 +30,7 @@ func main(){
 
 	//	fmt.Println("i = ",i)
 	//	fmt.Println("url = ", url_tmp)
-		n := dowok(url_tmp)
+		n := dowok(count, url_tmp)
 
 		if  n == 0 {
 
@@ -50,7 +51,7 @@ func main(){
 	fmt.Println("共爬取 ", count, "篇博客")
 }
 
-func dowok(url_list string) int{
+func dowok(num int, url_list string) int{
 
 	n := 0
 
@@ -85,8 +86,9 @@ func dowok(url_list string) int{
 		count++
 
 
-		deal_page(ever_only_url[i])
+		text := deal_page(ever_only_url[i])
 
+		writePage(num + i + 1, text)
 		//fmt.Println("len1 = ", len(ever_only_url[i]))
 		//fmt.Println("每一篇博客的url" + "  " +  ever_only_url[i])
 	}
@@ -171,9 +173,53 @@ func deal_2(ever_url [][]string) []string {
 
 
 
-func deal_page(url string) {
+func deal_page(url string)  string {
+
+	var text string
 
 	result := httpGet(url)
+	//var url [][]string
+
+	re := regexp.MustCompile(`</svg>(?s:(.*?))</div>`)
+
+	//re := regexp.MustCompile(`<a href="(?s:(.*?))" target="_blank">`)
+	//	fmt.Printf("re = %s\n",re)
+
+	if re == nil {
+		fmt.Println("爬去每一页时失败")
+		return text
+	}
 
 
+	content := re.FindAllStringSubmatch(result, 1)
+
+
+	for _, data := range content {
+
+		 text = data[1]
+		//fmt.Printf("%T",data[1])
+	}
+
+	return text
+}
+
+
+func writePage(count int, text string) {
+
+	fileName:= strconv.Itoa(count) + ".html"
+
+	f, err := os.Create(fileName)
+
+	defer f.Close()
+
+	if err != nil {
+
+		fmt.Println("os.Create err = ", err)
+
+		return
+	}
+
+	f.WriteString(text)
+
+	return
 }
