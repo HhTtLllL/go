@@ -28,14 +28,13 @@ func Run(tty bool, comArray []string, res *subsystems.ResourceConfig, volume str
 
 	//将环境变量传递给 process
 	parent, writePipe := container.NewParentProcess(tty, volume, containerName, imageName, envSlice)
-	//parent := container.NewParentProcess(tty, command)
-	//start 调用前面创建好的command 命令
 	if parent == nil {
 
 		log.Errorf("new parent process error")
 		return
 	}
 
+	//start 调用前面创建好的command 命令
 	// start 以非阻塞方式运行， run 为阻塞，等待命令结束
 	//首先会clone 出一个namspace 隔离的进程, 然后在子进程中,调用/proc/self/exe  调用自己, 发送init 参数
 	if err := parent.Start(); err != nil {
@@ -47,14 +46,11 @@ func Run(tty bool, comArray []string, res *subsystems.ResourceConfig, volume str
 	//fmt.Println("开始记录容器信息")
 	//fmt.Println("comarray = ", comArray)
 	containerName, err := recordContainerInfo(parent.Process.Pid, comArray, containerName, containerID, volume)
-	//fmt.Println("成功记录容器信息1")
 	if err != nil {
 
 		log.Errorf("recode container info error %v", err)
 		return
 	}
-
-	//fmt.Println("成功记录容器信息")
 
 	// use mydocker-cgroup as cgroup name
 	//创建 cgroup manager ，并通过调用 set 和 apply 设置资源限制并使限制在容器上生效

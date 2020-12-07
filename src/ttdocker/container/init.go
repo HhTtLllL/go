@@ -88,9 +88,7 @@ func setUpMnout(){
 		return
 	}
 	log.Infof("Current location is %s",pwd)
-	fmt.Println("pwd = ", pwd)
 
-	//syscall.Mount("", "/", "", syscall.MS_PRIVATE | syscall.MS_REC, "")
 	pivotRoot(pwd)
 
 	defaultMountFlags := syscall.MS_NOEXEC | syscall.MS_NOSUID | syscall.MS_NODEV
@@ -98,7 +96,13 @@ func setUpMnout(){
 	syscall.Mount("proc","/proc","proc",uintptr(defaultMountFlags),"")
 	syscall.Mount("tmpfs", "/dev", "tmpfs", syscall.MS_NOSUID | syscall.MS_STRICTATIME, "mode=755")
 }
+/*
+	使用pivot_root 实现rootfs切换和隔离
 
+	首先创建一个new_root的临时子目录作为put_old，然后调用 pivot_root实现切换
+	chdir("/")
+	umount put_old and clear
+*/
 func pivotRoot(root string) error {
 	/**
 	  为了使当前root的老 root 和新 root 不在同一个文件系统下，我们把root重新mount了一次
@@ -114,9 +118,18 @@ func pivotRoot(root string) error {
 
 	// 创建 rootfs/.pivot_root 存储 old_root
 	pivotDir := filepath.Join(root, ".pivot_root")
-	if err := os.Mkdir(pivotDir, 0777); err != nil {
+
+	fmt.Println("------  ", pivotDir, "-----")
+	if err := os.RemoveAll(pivotDir); err != nil {
+
 		return err
 	}
+	//如果此目录存在， 报错
+	if err := os.Mkdir(pivotDir, 0777); err != nil {
+
+		return err
+	}
+
 	// pivot_root 到新的rootfs, 现在老的 old_root 是挂载在rootfs/.pivot_root
 	// 挂载点现在依然可以在mount命令中看到
 	//        root 为 new root,   pivotDir 为put_old root
@@ -126,7 +139,10 @@ func pivotRoot(root string) error {
 		将当前进程的文件系统一动到putold 中，然后使newroot
 		成为新的root 文件系统
 	*/
+	if err := syscall.Mount("", "/", "", syscall.MS_PRIVATE | syscall.MS_REC, ""); err != nil {
 
+		fmt.Errorf("%v", err)
+	}
 	if err := syscall.PivotRoot(root, pivotDir); err != nil {
 
 		return fmt.Errorf("pivot_root %v", err)

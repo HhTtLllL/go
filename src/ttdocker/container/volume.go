@@ -20,8 +20,8 @@ func NewWorkSpace(volume string, imageName string, containerName string){
 	if volume != "" {
 
 		//解析volume 串
-	//	volumeURLs := volumeUrlExtract(volume)
-		volumeURLs := strings.Split(volume, ":")
+		volumeURLs := volumeUrlExtract(volume)
+		//volumeURLs := strings.Split(volume, ":")
 		length := len(volumeURLs)
 
 		if length == 2 && volumeURLs[0] != "" && volumeURLs[1] != "" {
@@ -232,8 +232,6 @@ func DeleteMountPointWithVolume(volumeURLs []string, containerName string) error
 	return nil
 }
 
-
-
 func PathExists(path string ) (bool, error ){
 
 	_, err := os.Stat(path)
@@ -250,7 +248,8 @@ func PathExists(path string ) (bool, error ){
 //解析volume 字符串
 func volumeUrlExtract(volume string) ([]string) {
 
-	volumeURLs := strings.Split(volume, ":")
+	//volumeURLs := strings.Split(volume, ":")
 
-	return volumeURLs
+	//return volumeURLs
+	return strings.Split(volume, ":")
 }

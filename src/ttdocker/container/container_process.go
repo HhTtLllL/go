@@ -119,7 +119,7 @@ func NewWorkSpace(rootURL string, mntURL string, volume string){
 
 	CreateReadOnlyLayer(rootURL)  //新建busybox 文件夹，将busybox.tar 解压到 busybox 目录下，作为容器的只读层
 	CreateWriteLayer(rootURL)    //创建了一个名为 writeLayer　的文件夹，　作为容器唯一的可写层
-	CreateMountPoint(rootURL, mntURL) //创建了mnt 文件，作为挂载点，然后啊writeLayer目录和busybox 目录mount 到 mnt 目录下
+	CreateMountPoint(rootURL, mntURL) //创建了mnt 文件，作为挂载点，然后把writeLayer目录和busybox 目录mount 到 mnt 目录下
 
 	if volume != "" {
 
@@ -135,9 +135,7 @@ func NewWorkSpace(rootURL string, mntURL string, volume string){
 
 			log.Infof("volume parameter input is not correct.")
 		}
-
 	}
-
 }
 
 
@@ -170,7 +168,7 @@ func CreateWriteLayer(rootURL string){
 
 	if err := os.Mkdir(writeURL, 0777); err != nil {
 
-		log.Errorf("mkdir dis %s error %v2222", writeURL, err)
+		log.Errorf("mkdir dis %s error %v", writeURL, err)
 	}
 }
 
@@ -182,7 +180,6 @@ func CreateMountPoint(rootURL string, mntURL string){
 	}
 
 	dirs := "dirs=" + rootURL + "writeLayer:" + rootURL + "busybox"
-
 	cmd := exec.Command("mount", "-t", "aufs", "-o", dirs, "none", mntURL)
 
 	cmd.Stdout = os.Stdout
