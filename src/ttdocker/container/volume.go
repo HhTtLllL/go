@@ -47,6 +47,7 @@ func CreateReadOnlyLayer(imageName string)  error {
 	//判断这个 busybox 目录是否存在
 	exist, err := PathExists(unTarFolderUrl)
 	if err != nil {
+
 		log.Infof("Fail to judge whether dir %s exists %v", unTarFolderUrl, err)
 		return err
 	}
@@ -54,12 +55,14 @@ func CreateReadOnlyLayer(imageName string)  error {
 	if !exist {
 		//如果目录不错在就创建这个目录
 		if err := os.MkdirAll(unTarFolderUrl, 0622); err != nil {
+
 			log.Errorf("mkdir dis %s error %v", unTarFolderUrl, err)
 			return err
 		}
 
 		//解压
 		if _, err := exec.Command("tar", "-xvf", imageUrl, "-C", unTarFolderUrl).CombinedOutput(); err != nil {
+
 			log.Errorf("Untar dis %s error %v", unTarFolderUrl, err)
 			return err
 		}
@@ -99,12 +102,12 @@ func CreateMountPoint(containerName string, imageName string) error {
 	_, err := exec.Command("mount", "-t", "aufs", "-o", dirs, "none", mntURL).CombinedOutput()
 
 	if err != nil {
+
 		log.Errorf("mount volume failed. %v", err)
 		return err
 	}
 
 	return nil
-
 	/*
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr;
@@ -140,6 +143,7 @@ func MountVolume(volumeURLs []string, containerName string) error {
 	//最后把宿主机文件目录挂载到容器挂载点，　这样启动容器的过程，对数据卷的处理也就完成了
 	_, err := exec.Command("mount", "-t", "aufs", "-o", dirs, "none", containerVolumeURL).CombinedOutput()
 	if err != nil {
+
 		log.Errorf("mount volume failed. %v", err)
 		return err
 	}
@@ -212,6 +216,7 @@ func DeleteMountPointWithVolume(volumeURLs []string, containerName string) error
 	containerUrl := mntURL + "/" + volumeURLs[1]
 	//卸载volume挂载点的文件系统，　保证整个容器的挂载点没有被使用
 	if _, err := exec.Command("umount", containerUrl).CombinedOutput(); err != nil {
+
 		log.Errorf("umount volume %s failed. %v", containerUrl, err)
 		return err
 	}

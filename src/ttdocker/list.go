@@ -19,6 +19,7 @@ func ListContainers(){
 	//读取文件夹下的所有内容
 	files, err := ioutil.ReadDir(dirURL)
 	if err != nil {
+
 		log.Errorf("Read idr %s error %v", dirURL, err)
 		return
 	}
@@ -28,11 +29,12 @@ func ListContainers(){
 	for _, file := range files {
 		//根据容器配置文件获取对应的信息，　然后转换成容器信息的对象
 		tmpContainer, err := getContainerInfo(file)
-
 		if err != nil {
+
 			log.Errorf("Get container info error %v", err)
 			continue
 		}
+
 		containers = append(containers, tmpContainer)
 	}
 
@@ -43,7 +45,8 @@ func ListContainers(){
 	//控制台输出的信息列
 	fmt.Fprint(w, "ID\tNAME\tPID\tSTATUS\tCOMMAND\tCREATED\n")
 
-	for _,item := range containers {
+	for _, item := range containers {
+
 		fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\t%s\n",
 			item.Id,
 			item.Name,
@@ -84,7 +87,6 @@ func getContainerInfo(file os.FileInfo) (* container.ContainerInfo, error) {
 		log.Errorf("Json umarshal error %v", err)
 		return nil, err
 	}
-
 
 	return &containerInfo, nil
 }

@@ -9,7 +9,7 @@ package nsenter
 #include <fcntl.h>
 
 
-//　这里__attribute__((constructor)) 是指，一旦这个报被引用，　那么这个函数就会被自动执行
+//　这里__attribute__((constructor)) 是指，一旦这个包被引用，　那么这个函数就会被自动执行
 //类似于构造函数，　会在程序一启动的时候运行
 __attribute__((constructor)) void enter_namespace(void) {
 
@@ -22,6 +22,7 @@ __attribute__((constructor)) void enter_namespace(void) {
 		//fprintf(stdout, "missing mydocker_pid env skip nsenter");
 		return;
 	}
+
 	char *ttdocker_cmd;
 	ttdocker_cmd = getenv("ttdocker_cmd");
 	if (ttdocker_cmd) {
@@ -49,6 +50,7 @@ __attribute__((constructor)) void enter_namespace(void) {
 	}
 //在进入的namespac 中执行指定的命令
 	int res = system(ttdocker_cmd);
+
 	exit(0);
 	return;
 }
