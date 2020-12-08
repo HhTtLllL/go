@@ -107,12 +107,10 @@ var runCommand = cli.Command{
 		}
 
 		containerName := context.String("name")
-		fmt.Println("name = ", containerName)
+		fmt.Println("containerName = ", containerName)
 
 		imageName := cmdArray[0]
 		cmdArray = cmdArray[1:]
-
-
 
 		Run(createTty, cmdArray,resConf, volume, containerName, imageName, envSlice, network, portmapping)
 
@@ -138,7 +136,6 @@ var initCommand = cli.Command{
 var commitCommand = cli.Command{
 	Name: "commit",
 	Usage: "commit a container into image",
-
 	Action: func(context *cli.Context) error {
 
 		if len(context.Args()) < 2 {
@@ -157,7 +154,6 @@ var commitCommand = cli.Command{
 var listCommand = cli.Command{
 	Name: "ps",
 	Usage: "list all the containers",
-
 	Action: func(context *cli.Context) error{
 
 		ListContainers()

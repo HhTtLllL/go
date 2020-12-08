@@ -96,11 +96,10 @@ func CreateMountPoint(containerName string, imageName string) error {
 	tmpWriteLayer := fmt.Sprintf(WriteLayerUrl, containerName)
 	tmpImageLocation := RootUrl + "/" + imageName
 	mntURL := fmt.Sprintf(MntUrl, containerName)
-
 	dirs := "dirs=" + tmpWriteLayer + ":" + tmpImageLocation
 
+	fmt.Println("dirs = ", dirs, " mntURL = ", mntURL)
 	_, err := exec.Command("mount", "-t", "aufs", "-o", dirs, "none", mntURL).CombinedOutput()
-
 	if err != nil {
 
 		log.Errorf("mount volume failed. %v", err)
@@ -224,7 +223,7 @@ func DeleteMountPointWithVolume(volumeURLs []string, containerName string) error
 	//卸载整个容器文件系统的挂载点
 	if _, err := exec.Command("umount", mntURL).CombinedOutput(); err != nil {
 
-		log.Errorf("mount mountPoint %s failed. %v", mntURL, err)
+		log.Errorf("umount mountPoint %s failed. %v", mntURL, err)
 		return err
 	}
 
