@@ -291,8 +291,8 @@ func setupIPTables(bridgeName string, subnet *net.IPNet) error {
 	*/
 	//POSTROUNTING 路由后
 	//-s  指定作为源地址匹配, 不能执行主机名称, 必须是IP, ! 表示除这个IP外
-	//iptablesCmd := fmt.Sprintf("-t nat -A POSTROUTING -s %s ! -o %s -j MASQUERADE", subnet.String(), bridgeName)
-	iptablesCmd := fmt.Sprintf("-t nat -A POSTROUTING -s %s ! -o %s -j SNAT --to-source 192.168.30.214", subnet.String(), bridgeName)
+	iptablesCmd := fmt.Sprintf("-t nat -A POSTROUTING -s %s ! -o %s -j MASQUERADE", subnet.String(), bridgeName)
+	//iptablesCmd := fmt.Sprintf("-t nat -A POSTROUTING -s %s ! -o %s -j SNAT --to-source 192.168.30.219", subnet.String(), bridgeName)
 	//iptablesCmd := fmt.Sprintf("-t nat -A POSTROUTING -s %s ! -o %s -j MASQUERADE", bridgeName, bridgeName)
 	cmd := exec.Command("iptables", strings.Split(iptablesCmd, " ")...)
 	//执行 iptables 命令配置 SNAT 规则
