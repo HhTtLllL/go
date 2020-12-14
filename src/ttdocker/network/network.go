@@ -432,6 +432,7 @@ func configPortMapping(ep *Endpoint, cinfo *container.ContainerInfo) error {
 		//分割成宿主机的端口和容器的端口
 		portMapping := strings.Split(pm, ":")
 		if len(portMapping) != 2 {
+
 			logrus.Errorf("port mapping format error, %v", pm)
 			continue
 		}
@@ -448,6 +449,7 @@ func configPortMapping(ep *Endpoint, cinfo *container.ContainerInfo) error {
 
 		output, err := cmd.Output()
 		if err != nil {
+
 			logrus.Errorf("iptables output, %v", output)
 			continue
 		}
@@ -463,6 +465,7 @@ func Connect(networkName string, cinfo *container.ContainerInfo) error {
 	//从network 数组中取到网络的配置信息,如果找不到网络则返回错误
 	network, ok := networks[networkName]
 	if !ok {
+
 		return fmt.Errorf("No such network ::%s", networkName)
 	}
 
