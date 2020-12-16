@@ -15,6 +15,7 @@ type BridgeNetworkDriver struct {
 }
 
 func (d *BridgeNetworkDriver) Name () string {
+
 	return "bridge"
 }
 
@@ -53,7 +54,6 @@ func (d * BridgeNetworkDriver) Delete(network Network) error {
 	}
 
 	//删除网络对应的 Linux Bridge 设备
-
 	return netlink.LinkDel(br)
 }
 
@@ -232,7 +232,6 @@ func setInterfaceUP(interfaceName string) error {
 func setInterfaceIP(name string, rawIP string) error {
 	retries := 2;
 	
-
 	var iface netlink.Link
 	var err error
 

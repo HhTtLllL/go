@@ -2,6 +2,7 @@ package network
 
 import (
 	"encoding/json"
+	"fmt"
 	log "github.com/Sirupsen/logrus"
 	"net"
 	"os"
@@ -59,7 +60,7 @@ func (ipam *IPAM) load() error {
 		return err
 	}
 
-	//将文件中的内容反序列化出IP的分配信息
+	//将文件中的内容反序列化出IP的分配信息, 将结果保存到 ipad.Subnets 中
 	err = json.Unmarshal(subnetJson[:n], ipam.Subnets)
 	if err != nil {
 
@@ -116,6 +117,14 @@ func (ipam *IPAM) Allocate(subnet *net.IPNet) (ip net.IP, err error ){
 
 		log.Errorf("Error dump allocation info, %v", err)
 	}
+	fmt.Println("ipam.subnets", (*ipam.Subnets))
+	/*
+		ParseCIDR(s string) (IP, *IPNet, error)
+							将s作为CIDR(无类型域间路由)的IP地址和掩码字符串
+
+		本函数会返回ＩＰ地址和该ＩＰ所在的网络和掩码　例如: ParseCIDR("192.168.100.1/16")会返回IP地址
+													192.168.100.1 和 IP网络 192.168.0.0/16
+	*/
 
 	_, subnet, _ = net.ParseCIDR(subnet.String())
 	/*
@@ -123,15 +132,20 @@ func (ipam *IPAM) Allocate(subnet *net.IPNet) (ip net.IP, err error ){
 		比如： 127.0.0.0/8  网段的子网掩码是 255.0.0.0
 		subnet.Mask.Size() 的返回值就是前面 255 所对应的位数的总位数， 即 8 和 24
 	*/
+	//Mask  -- 类型 []byte
+	//size　返回的是IPMask 的前导的１字位数和总字位数．　
 	one, size := subnet.Mask.Size()
 	//如果之前没有分配过这个网段，则初始化网段的分配配置
 	if _, exist := (*ipam.Subnets)[subnet.String()]; !exist{
 		/*
 			初始化
-			用 0 填满这个网段的配置,
-			1 << uint8(size- one) 表示这个网段中有多少个可用地址
+			用 0 填满这个网段的配置
+			1 << uint8(size - one)表示这个网段中有多少个可用地址
 			size - one 是子网掩码后面的网络位数,2^(size - one) 表示网段中的可用IP数
 			而2^(size - one)等价于 1 << uint8(size - one)
+		*/
+		/*
+			Repeat(s string, count int) string  --返回count个s串联的字符串
 		*/
 		(*ipam.Subnets)[subnet.String()] = strings.Repeat("0", 1 << uint8(size - one))
 	}
@@ -141,9 +155,11 @@ func (ipam *IPAM) Allocate(subnet *net.IPNet) (ip net.IP, err error ){
 		//找到数组中为 0,的项和数组序号,即可以分配的IP
 		if (*ipam.Subnets)[subnet.String()][c] == '0' {
 
+			//将字符串转化为 bute
 			ipalloc := []byte((*ipam.Subnets)[subnet.String()])
 			//Go的字符串, 创建以后就不能修改, 所以通过转换成byte 数组, 修改后在转换成字符串赋值
 			ipalloc[c] = '1'
+			//将 byte 数组在转化为 string 字符串
 			(*ipam.Subnets)[subnet.String()] = string(ipalloc)
 			//这里的IP为初始IP, 比如对于网段 192.168.0.0/16,这里就是 192.168.0.0
 			ip = subnet.IP
@@ -184,7 +200,7 @@ func (ipam *IPAM) Release(subnet *net.IPNet, ipaddr *net.IP) error {
 	}
 
 	c := 0
-	releaseIP := ipaddr.To4()
+	releaseIP := ipaddr.To4() 									//To4将一个IPv4地址转换为4字节表示
 	releaseIP[3] -= 1
 
 	for t := uint(4); t > 0; t -= 1 {

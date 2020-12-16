@@ -47,7 +47,6 @@ type Network struct {
 	Driver 		string   	   // 网络驱动名
 }
 
-
 /*
 网络驱动
 网络驱动是一个网络功能中的组件,
@@ -60,15 +59,16 @@ type NetworkDriver interface {
 	 Disconnect(network Network, endpoint *Endpoint) error		//从网络上移除容器网络端点
 }
 
-
-
 //将这个网络的配置信息保存在文件系统中
 func (nw *Network) dump (dumpPath string) error {
 	//检查保存的目录是否存在， 不存在则创建
 	if _, err := os.Stat(dumpPath); err != nil {
+
 		if os.IsNotExist(err) {
+
 			os.MkdirAll(dumpPath, 0644)
 		} else {
+
 			return err
 		}
 	}
@@ -78,6 +78,7 @@ func (nw *Network) dump (dumpPath string) error {
 	//打开保存的文件用于写入， 后面打开的模式参数分别是存在内容清空、只写入、不存在则创建
 	nwFile, err := os.OpenFile(nwPath, os.O_TRUNC | os.O_WRONLY | os.O_CREATE, 0644)
 	if err != nil {
+
 		logrus.Errorf("error :", err)
 		return err
 	}
@@ -86,6 +87,7 @@ func (nw *Network) dump (dumpPath string) error {
 	//通过json的库序列网络对象到json 的字符串
 	nwJson, err := json.Marshal(nw)
 	if err != nil {
+
 		logrus.Errorf("error: ", err)
 		return err
 	}
@@ -93,6 +95,7 @@ func (nw *Network) dump (dumpPath string) error {
 	//将网络配置json字符串写入到文件中
 	_, err = nwFile.Write(nwJson)
 	if err != nil {
+
 		logrus.Errorf("error: ", err)
 		return err
 	}
@@ -116,14 +119,15 @@ func (nw *Network) load(dumpPath string) error {
 	nwJson := make([]byte, 2000)
 	n, err := nwConfigFile.Read(nwJson)
 	if err != nil {
+
 		fmt.Println("加载文件失败")
 		return err
 	}
 
-	fmt.Println("转化json串")
 	//通过json 字符串反序列化出网络
 	err = json.Unmarshal(nwJson[:n], nw)
 	if err != nil {
+
 		logrus.Errorf("Error load nw info", err)
 		return err
 	}
@@ -136,7 +140,9 @@ func (nw *Network) remove(dumpPath string) error {
 	//网络对应的配置文件,即配置目录下的网络名文件
 	//检查文件状态,如果文件已经不存在就直接返回
 	if _, err := os.Stat(path.Join(dumpPath, nw.Name)); err != nil {
+
 		if os.IsNotExist(err) {
+
 			fmt.Println("已经被删除")
 			return nil
 		} else {
@@ -150,16 +156,16 @@ func (nw *Network) remove(dumpPath string) error {
 
 
 func Init() error{
-	fmt.Println("开始init")
 	//加载网络驱动
 	var bridgeDriver = BridgeNetworkDriver{}
 	//drivers[bridge]
 	drivers[bridgeDriver.Name()] = &bridgeDriver
 
 	//判断网络的配置目录是否存在，不存在则创建
-	fmt.Println("default = ", defaultNetworkPath)
 	if _, err := os.Stat(defaultNetworkPath); err != nil {
+
 		if os.IsNotExist(err){
+
 			os.MkdirAll(defaultNetworkPath, 0644)
 		}else {
 			return err
@@ -207,10 +213,6 @@ func Init() error{
 	return nil
 }
 
-
-
-
-
 //创建网络 			bridge        192.168.0.0/24    testbridge
 func CreateNetwork(driver string, subnet string, name string) error {
 	//ParseCIDR 是 Golang net 包的函数， 功能是将网段的字符转换成 net.IPNet 的对象
@@ -221,16 +223,21 @@ func CreateNetwork(driver string, subnet string, name string) error {
 		会返回IP地址192.168.100.1和IP网络192.168.0.0/16。
 		ParseCIDR 将 s 作为一个CIDR 的IP地址和掩码字符窜
 	*/
-	_, cidr, _ := net.ParseCIDR(subnet)
+
+
+	ip, cidr, _ := net.ParseCIDR(subnet)
+
+	fmt.Println("ip = ", ip, "subnet = ", subnet)
 	//通过IPAM分配网关IP， 获取到网段中第一个IP作为网关的IP，
 	gatewayIp, err := ipAllocator.Allocate(cidr)
 	if err != nil {
 
 		return err
 	}
+	fmt.Println("gatewapIp = ", gatewayIp)
 	cidr.IP = gatewayIp
 
-	//调用指定的网络驱动创建网络， 这里的drivers 字典是各个网络驱动的实例字典,通过调用网络驱动的
+	//调用指定的网络驱动创建网络， 这里的drivers字典是各个网络驱动的实例字典,通过调用网络驱动的
 	//Create 方法创建网络， 后面会议 Bridge 驱动为例，介绍它的实现
 	//drivers[driver] 返回的是一个 NetDriver 网络驱动, 网络驱动创建一个网络   nw
 	nw, err := drivers[driver].Create(cidr.String(), name)
@@ -256,11 +263,11 @@ func ListNetwork() {
 		fmt.Fprintf(w, "%s\t%s\t%s\n",
 			nw.Name,
 			nw.IpRange.String(),
-			nw.Driver,
-		)
+			nw.Driver)
 	}
 	//输出到标准输出
 	if err := w.Flush(); err != nil {
+
 		logrus.Errorf("Flush error %v", err)
 		return
 	}
@@ -280,6 +287,7 @@ func DeleteNetwork(networkName string) error {
 
 	//调用IPAM的实例ipAllocator 释放网络网关的IP
 	if err := ipAllocator.Release(nw.IpRange, &nw.IpRange.IP); err != nil {
+
 		return fmt.Errorf("Error remove betwork gageway ip:: %s", err)
 	}
 
@@ -311,6 +319,7 @@ func enterContainerNetns(enLink *netlink.Link, cinfo *container.ContainerInfo) f
 	*/
 	f, err := os.OpenFile(fmt.Sprintf("/proc/%s/ns/net", cinfo.Pid), os.O_RDONLY, 0)
 	if err != nil {
+
 		logrus.Errorf("error get container net namespace, %v", err)
 	}
 
@@ -326,6 +335,7 @@ func enterContainerNetns(enLink *netlink.Link, cinfo *container.ContainerInfo) f
 	//修改veth peer 另外一端到容器的namespace 中
 	//修改网络端点Veth的另外一端, 将其移动到容器 Net Namespace 中
 	if err = netlink.LinkSetNsFd(*enLink, int(nsFD)); err != nil {
+
 		logrus.Errorf("error set link netns, %v", err)
 	}
 
@@ -334,12 +344,14 @@ func enterContainerNetns(enLink *netlink.Link, cinfo *container.ContainerInfo) f
 	//以便后面从容器的Net Namespace 中退出, 回到原本网络的 Net Namespace 中
 	origns, err := netns.Get()
 	if err != nil {
+
 		logrus.Errorf("error get current netns, %v", err)
 	}
 
 	//调用netns.set 方法,将当前进程加入容器的 Net Namespace
 	//设置当前进程到新的网络namespace ,并在函数执行完成之后在恢复到之前的namespace
 	if err = netns.Set(netns.NsHandle(nsFD)); err != nil {
+
 		logrus.Errorf("error set netns, %v", err)
 	}
 
@@ -358,7 +370,6 @@ func enterContainerNetns(enLink *netlink.Link, cinfo *container.ContainerInfo) f
 	}
 }
 
-
 //配置容器Namespace 中的网络 设备 及 路由
 /*
 	容器有自己独立的NetNamespace, 需要将网络端点的Veth设备的另外一端移到这个Net Namespace中并配置, 才能给容器插上网线
@@ -368,9 +379,9 @@ func configEndpointIpAddressAndRoute(ep *Endpoint, cinfo *container.ContainerInf
 	//通过网络端点中 "Veth" 的另一端
 	peerLink, err := netlink.LinkByName(ep.Device.PeerName)
 	if err != nil {
+
 		return fmt.Errorf("fail config endpoint: %v", err)
 	}
-
 	/*
 		将容器的网络端点加入到容器的网络空间中
 		并使这个函数下面的操作都在这个网络空间中进行
@@ -388,6 +399,7 @@ func configEndpointIpAddressAndRoute(ep *Endpoint, cinfo *container.ContainerInf
 
 	//调用setInterfaceIP 函数设置容器内Veth 端点的IP
 	if err = setInterfaceIP(ep.Device.PeerName, interfaceIP.String()); err != nil {
+
 		return fmt.Errorf("%v, %s", ep.Network, err)
 	}
 
