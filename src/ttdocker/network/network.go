@@ -137,6 +137,7 @@ func (nw *Network) load(dumpPath string) error {
 }
 func (nw *Network) remove(dumpPath string) error {
 
+	fmt.Println("paht = ", dumpPath, "Name = ", nw.Name)
 	//网络对应的配置文件,即配置目录下的网络名文件
 	//检查文件状态,如果文件已经不存在就直接返回
 	if _, err := os.Stat(path.Join(dumpPath, nw.Name)); err != nil {
@@ -226,8 +227,8 @@ func CreateNetwork(driver string, subnet string, name string) error {
 
 
 	ip, cidr, _ := net.ParseCIDR(subnet)
-
 	fmt.Println("ip = ", ip, "subnet = ", subnet)
+
 	//通过IPAM分配网关IP， 获取到网段中第一个IP作为网关的IP，
 	gatewayIp, err := ipAllocator.Allocate(cidr)
 	if err != nil {
@@ -282,14 +283,18 @@ func DeleteNetwork(networkName string) error {
 	//查找网络是否存在
 	nw, ok := networks[networkName]
 	if !ok {
+
 		return fmt.Errorf("no such network::%s", networkName)
 	}
+
+	fmt.Println("nw.subnet ====== ", nw.IpRange)
 
 	//调用IPAM的实例ipAllocator 释放网络网关的IP
 	if err := ipAllocator.Release(nw.IpRange, &nw.IpRange.IP); err != nil {
 
 		return fmt.Errorf("Error remove betwork gageway ip:: %s", err)
 	}
+	//将ip位图所有位全部置0
 
 	//调用网络驱动删除网络创建的设备与配置,后面会以birdge 驱动删除网络为例子介绍如何实现网络驱动删除网络
 	if err := drivers[nw.Driver].Delete(*nw); err != nil {

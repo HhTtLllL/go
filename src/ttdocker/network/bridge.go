@@ -45,11 +45,13 @@ func (d *BridgeNetworkDriver) Create(subnet string, name string) (*Network, erro
 	输入的是网络对象, 执行时会删除网络所对应的网络设备, 而在Bridge Driver 中, 就是删除网络对应的Linux Bridge的设备.
 */
 func (d * BridgeNetworkDriver) Delete(network Network) error {
+	fmt.Println("删除 Bridge")
 	//网络名即Linux Bridge 的设备名
 	bridgeName := network.Name
 	//通过netlink库的LinkByName 找到对应的seeing
 	br, err := netlink.LinkByName(bridgeName)
 	if err != nil {
+
 		return err
 	}
 
