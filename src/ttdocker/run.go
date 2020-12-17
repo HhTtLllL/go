@@ -18,7 +18,7 @@ import (
 
 
 
-func Run(tty bool, comArray []string, res *subsystems.ResourceConfig, volume string, containerName string, imageName string, envSlice []string, nw string, portmapping []string){
+func Run(tty bool, comArray []string, res *subsystems.ResourceConfig, volume, containerName , imageName string, envSlice []string, nw string, portmapping []string){
 
 	containerID := randStringBytes(10)
 	if containerName == "" {

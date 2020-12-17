@@ -276,6 +276,7 @@ var networkCommand = cli.Command{
 					return fmt.Errorf("missing network name")
 				}
 				network.Init()
+				fmt.Println("subnett======== ", context.String("subnet"))
 				err := network.CreateNetwork(context.String("driver"), context.String("subnet"), context.Args()[0])
 
 				if err != nil {
