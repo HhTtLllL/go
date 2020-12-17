@@ -106,7 +106,6 @@ var runCommand = cli.Command{
 		}
 
 		containerName := context.String("name")
-		fmt.Println("containerName = ", containerName)
 
 		imageName := cmdArray[0]
 		cmdArray = cmdArray[1:]

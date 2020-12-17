@@ -116,11 +116,10 @@ func checkPid(pid int) bool {
 
 	err = process.Signal(syscall.Signal(0))
 	if err != nil {
-	//	log.Printf("Process %d is dead!", pid)
+
 		return false
 	} else {
-	//	log.Printf("Process %d is alive!", pid)
+
 		return true
 	}
-	// return true
 }

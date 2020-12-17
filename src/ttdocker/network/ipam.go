@@ -191,12 +191,8 @@ func (ipam *IPAM) Release(subnet *net.IPNet, ipaddr *net.IP) error {
 
 	ipam.Subnets = &map[string]string{}
 
-	fmt.Println("subnet = ", subnet)
-
 	_, subnet, _ = net.ParseCIDR(subnet.String())
 
-	fmt.Println("subnet2 = ", subnet)
-	fmt.Println("开始load 文件")
 	err := ipam.load()
 	if err != nil {
 
@@ -207,19 +203,14 @@ func (ipam *IPAM) Release(subnet *net.IPNet, ipaddr *net.IP) error {
 	releaseIP := ipaddr.To4() 									//To4将一个IPv4地址转换为4字节表示
 	releaseIP[3] -= 1
 
-	fmt.Println("for uint4")
 	for t := uint(4); t > 0; t -= 1 {
 
 		c += int(releaseIP[t - 1] - subnet.IP[t - 1]) << ((4 - t) * 8)
 	}
 
-	fmt.Println("转化为byte")
 	ipalloc := []byte((*ipam.Subnets)[subnet.String()])
-	fmt.Println("转化为 c")
-	fmt.Println("c = ", c)
 	ipalloc[c] = '0'
 
-	fmt.Println("转化为 string")
 	(*ipam.Subnets)[subnet.String()] = string(ipalloc)
 
 	ipam.dump()

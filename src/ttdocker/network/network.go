@@ -106,21 +106,17 @@ func (nw *Network) dump (dumpPath string) error {
 //从网络的配置目录中的文件读取到网络的配置， 以便网络查询及在这个网络上连接网络端点
 func (nw *Network) load(dumpPath string) error {
 	//打开配置文件
-	fmt.Println("准备打开文件")
 	nwConfigFile, err := os.Open(dumpPath)
-	fmt.Println("dumppath = ", dumpPath)
 	defer nwConfigFile.Close()
 	if err != nil {
 
 		return err
 	}
-	fmt.Println("开始加载文件")
 	//从配置文件中读取网络的配置json 字符串
 	nwJson := make([]byte, 2000)
 	n, err := nwConfigFile.Read(nwJson)
 	if err != nil {
 
-		fmt.Println("加载文件失败")
 		return err
 	}
 
@@ -132,19 +128,16 @@ func (nw *Network) load(dumpPath string) error {
 		return err
 	}
 
-	fmt.Println("成功加载文件")
 	return nil
 }
 func (nw *Network) remove(dumpPath string) error {
 
-	fmt.Println("paht = ", dumpPath, "Name = ", nw.Name)
 	//网络对应的配置文件,即配置目录下的网络名文件
 	//检查文件状态,如果文件已经不存在就直接返回
 	if _, err := os.Stat(path.Join(dumpPath, nw.Name)); err != nil {
 
 		if os.IsNotExist(err) {
 
-			fmt.Println("已经被删除")
 			return nil
 		} else {
 			return nil
@@ -179,9 +172,6 @@ func Init() error{
 	filepath.Walk(defaultNetworkPath, func(nwPath string, info os.FileInfo, err error) error {
 
 		//如果是目录则跳过
-		/*if info.IsDir() {
-			return nil
-		}*/
 
 		//func HasSuffix(s, suffix string) bool
 		//判断 s 串中是否包含 suffix 子串
@@ -286,8 +276,6 @@ func DeleteNetwork(networkName string) error {
 
 		return fmt.Errorf("no such network::%s", networkName)
 	}
-
-	fmt.Println("nw.subnet ====== ", nw.IpRange)
 
 	//调用IPAM的实例ipAllocator 释放网络网关的IP
 	if err := ipAllocator.Release(nw.IpRange, &nw.IpRange.IP); err != nil {

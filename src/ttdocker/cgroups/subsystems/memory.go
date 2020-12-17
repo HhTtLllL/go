@@ -24,7 +24,6 @@ func (s *MemorySubSystem) Set(cgroupPath string, res *ResourceConfig) error {
 
 			//writefile 函数向filename指定的文件中写入数据。如果文件不存在将按给出的权限创建文件，否则在写入数据之前清空文件。
 			// Join 讲任意数量的路径元素放入一个单一路径里 sbusysCgroupPath/memory.limit_in_bytes
-			fmt.Println("----- Limit ---- ", []byte(res.MemoryLimit))
 			if err := ioutil.WriteFile(path.Join(subsysCgroupPath, "memory.limit_in_bytes"), []byte(res.MemoryLimit), 0644); err != nil {
 
 				return fmt.Errorf("set cgrup memory fail #{err}")

@@ -42,6 +42,7 @@ func ExecContainer(containerName string, comArray []string){
 	cmd.Env = append(os.Environ(), containerEnvs...)
 
 	if err := cmd.Run(); err != nil {
+
 		log.Errorf("exec container %s error %v", containerName, err)
 	}
 }

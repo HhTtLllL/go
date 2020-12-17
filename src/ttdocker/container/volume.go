@@ -24,7 +24,6 @@ func NewWorkSpace(volume string, imageName string, containerName string){
 
 		//解析volume 串
 		volumeURLs := volumeUrlExtract(volume)
-		//volumeURLs := strings.Split(volume, ":")
 		length := len(volumeURLs)
 
 		if length == 2 && volumeURLs[0] != "" && volumeURLs[1] != "" {
@@ -42,8 +41,6 @@ func NewWorkSpace(volume string, imageName string, containerName string){
 // 根据用户输入的镜像为每个容器创建只读层。 镜像解压出来的只读层以RootUrl + imageName 命名
 //根据tar 格式的镜像文件作为只读层
 func CreateReadOnlyLayer(imageName string)  error {
-	/*busyboxURL := rootURL + "busybox/"
-	busyboxTarURL := rootURL + "busyox.tar"*/
 
 	unTarFolderUrl := RootUrl + "/" + imageName + "/"
 	imageUrl := RootUrl + "/" + imageName + ".tar"
@@ -78,8 +75,6 @@ func CreateReadOnlyLayer(imageName string)  error {
 //为每一个容器创建一个读写层， 容器的读写层修改成以 WriteLayerUrl + containerName 命名
 func CreateWriteLayer(containerName string){
 
-	//writeURL := rootURL + "writeLayer/"
-
 	writeURL := fmt.Sprintf(WriteLayerUrl, containerName)
 	if err := os.MkdirAll(writeURL, 0777); err != nil {
 
@@ -102,7 +97,6 @@ func CreateMountPoint(containerName string, imageName string) error {
 	mntURL := fmt.Sprintf(MntUrl, containerName)
 	dirs := "dirs=" + tmpWriteLayer + ":" + tmpImageLocation
 
-	fmt.Println("dirs = ", dirs, " mntURL = ", mntURL)
 	//把通过镜像解压出来的只读层和容器的可读写层用aufs联合挂载称为容器的文件系统。
 	_, err := exec.Command("mount", "-t", "aufs", "-o", dirs, "none", mntURL).CombinedOutput()
 	if err != nil {
@@ -112,14 +106,6 @@ func CreateMountPoint(containerName string, imageName string) error {
 	}
 
 	return nil
-	/*
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr;
-
-	//执行 command 命令
-	if err := cmd.Run(); err != nil {
-		log.Errorf("%v", err)
-	}*/
 }
 
 //根据用户输入的volume 参数获取相应要挂载的宿主机 数据卷URL 和容器中的挂载点URL， 并挂载数据卷
@@ -152,16 +138,6 @@ func MountVolume(volumeURLs []string, containerName string) error {
 		return err
 	}
 
-	/*
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	if err := cmd.Run(); err != nil {
-
-		log.Errorf("mount volume failed. %v", err)
-	}
-*/
-
 	return nil
 }
 
@@ -176,11 +152,14 @@ func DeleteWorkSpace(volume string, containerName string){
 		length := len(volumeURLs)
 
 		if length == 2 && volumeURLs[0] != "" && volumeURLs[1] != "" {
+
 			DeleteMountPointWithVolume(volumeURLs, containerName)
 		}else {
+
 			DeleteMountPoint(containerName)
 		}
 	}else {
+
 		DeleteMountPoint(containerName)
 	}
 
@@ -193,6 +172,7 @@ func DeleteMountPoint(containerName string) error {
 	mntURL := fmt.Sprintf(MntUrl, containerName)
 	_, err := exec.Command("umount", mntURL).CombinedOutput()
 	if err != nil {
+
 		log.Errorf("unmount %s error %v", mntURL, err)
 		return err
 	}
@@ -257,8 +237,5 @@ func PathExists(path string ) (bool, error ){
 //解析volume 字符串
 func volumeUrlExtract(volume string) ([]string) {
 
-	//volumeURLs := strings.Split(volume, ":")
-
-	//return volumeURLs
 	return strings.Split(volume, ":")
 }

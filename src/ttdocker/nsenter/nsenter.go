@@ -17,10 +17,8 @@ __attribute__((constructor)) void enter_namespace(void) {
 	char *ttdocker_pid = getenv("ttdocker_pid");
 	if (ttdocker_pid) {
 
-		//fprintf(stdout, "got mydocker_pid=%s\n", mydocker_pid);
 	} else {
 
-		//fprintf(stdout, "missing mydocker_pid env skip nsenter");
 		return;
 	}
 
@@ -30,14 +28,6 @@ __attribute__((constructor)) void enter_namespace(void) {
 		return ;
 	}
 
-	//if (ttdocker_cmd) {
-
-		//fprintf(stdout, "got mydocker_cmd=%s\n", mydocker_cmd);
-	//} else {
-
-		//fprintf(stdout, "missing mydocker_cmd env skip nsenter");
-	//	return;
-	//}
 	char nspath[1024];
 	//需要进入的5中　namespace
 	char *namespaces[] = { "ipc", "uts", "net", "pid", "mnt" };
@@ -49,22 +39,15 @@ __attribute__((constructor)) void enter_namespace(void) {
 		int fd = open(nspath, O_RDONLY);
 		if(fd < 0) {
 
-			//sprintf(stdout, "open the file faild: %s\n", nspath);
 			return ;
 		}
 		//这里调用setns系统调用进入对应的namespace
 		if (setns(fd, 0) == -1) {
 
-			//fprintf(stderr, "setns on %s namespace failed: %s\n", namespaces[i], strerror(errno));
-		//} else {
-
-			//成功进入该命名空间
-			//fprintf(stdout, "setns on %s namespace succeeded\n", namespaces[i]);
 		}
 		close(fd);
 	}
      //在进入的namespac 中执行指定的命令
-	//int res = system(ttdocker_cmd);
 	system(ttdocker_cmd);
 
 	exit(0);

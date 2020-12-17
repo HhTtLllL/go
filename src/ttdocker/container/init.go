@@ -29,20 +29,16 @@ func RunContainerInitProcess() error {
 		//。 MS二NOSUID 在本系统中运行程序的时候， 不允许 set-user-ID 或 set-group-ID 。
 		//。 MS NODEV 这个参数是自 从 Linux 2.4 以来，所有 mount 的系统都会默认设定的参数。
 
-	/*argv := []string{command}
+	//argv := []string{command}
 
 	//exec 实现了完成初始化动作并将用户进程运行起来的操作
 	//exec 执行command 对应的程序
-	if err := syscall.Exec(command, argv, os.Environ()); err != nil {
 
-		logrus.Errorf(err.Error())
-	}*/
 
 	// 3-2
 
 	//改动，调用 exec.LookPath，可以在系统的 PATH 里面寻找命令的绝对路径
 	// 举例： 如果输入的命令为 ls, LookPath  处理后的 为 /bin/ls 然后运行起来
-	fmt.Println("cmdArray =", cmdArray[0]);
 	path, err := exec.LookPath(cmdArray[0])
 	if err != nil {
 
@@ -74,21 +70,12 @@ func readUserCommand() []string {
 	}
 
 	msgStr := string(msg)
-	fmt.Println("msgStr = ", msgStr)
 	return strings.Split(msgStr, " ")
 }
 
 func setUpMnout(){
 
 	//　获取当前路径　/root/busybox/
-/*	pwd, err := os.Getwd()
-	if err != nil {
-
-		log.Errorf("get cruuent location error %v",err)
-		return
-	}
-	log.Infof("Current location is %s",pwd)
-*/
 	pivotRoot()
 
 	syscall.Mount("", "/", "", syscall.MS_PRIVATE|syscall.MS_REC, "")
@@ -109,9 +96,6 @@ func pivotRoot() error {
 	/**
 	  为了使当前root的老 root 和新 root 不在同一个文件系统下，我们把root重新mount了一次
 	  bind mount是把相同的内容换了一个挂载点的挂载方法
-	  root = /root/busybox
-	  老root = /
-	  新root = ?
 	*/
 	root, err := os.Getwd()
 	if err != nil {
@@ -124,6 +108,7 @@ func pivotRoot() error {
 	syscall.Mount("", "/", "", syscall.MS_PRIVATE|syscall.MS_REC, "")
 
 	if err := syscall.Mount(root, root, "bind",syscall.MS_BIND | syscall.MS_REC , ""); err != nil {
+
 		return fmt.Errorf("Mount rootfs t oitself error: #{err}")
 	}
 
@@ -131,35 +116,20 @@ func pivotRoot() error {
 	pivotDir := filepath.Join(root, ".pivot_root")
 	_, err = os.Stat(pivotDir)
 	if err != nil && os.IsNotExist(err){
+
 		if err := os.Mkdir(pivotDir, 0777); err != nil {
 
 			return err
 		}
-
 	}
-	/*if err := os.RemoveAll(pivotDir); err != nil {
-
-		return err
-	}*/
-	//如果此目录存在， 报错
-	//if err := os.Mkdir(pivotDir, 0777); err != nil {
-
-		//return err
-	//}
-
 	// pivot_root 到新的rootfs, 现在老的 old_root 是挂载在rootfs/.pivot_root
 	// 挂载点现在依然可以在mount命令中看到
 	//        root 为 new root,   pivotDir 为put_old root
 
-	//pivotRoot(newroot string, putold string)
 	/*
 		将当前进程的文件系统一动到putold 中，然后使newroot
 		成为新的root 文件系统
 	*/
-	/*if err := syscall.Mount("", "/", "", syscall.MS_PRIVATE | syscall.MS_REC, ""); err != nil {
-
-		fmt.Errorf("%v", err)
-	}*/
 	if err := syscall.PivotRoot(root, pivotDir); err != nil {
 
 		return fmt.Errorf("pivot_root %v", err)

@@ -19,8 +19,7 @@ func main(){
 	app.Commands = []cli.Command{
 		initCommand,
 		runCommand,
-		//目的是把运行状态容器的内存存储成镜像保存下来
-		commitCommand,
+		commitCommand,					//把运行状态容器的内存存储成镜像保存下来
 		listCommand,
 		logCommand,
 		execCommand,
