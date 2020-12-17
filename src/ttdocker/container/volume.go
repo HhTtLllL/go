@@ -13,8 +13,11 @@ import (
 //为每个容器创建文件系统
 func NewWorkSpace(volume string, imageName string, containerName string){
 
+	//根据用户输入的镜像为每个容器创建只读层
 	CreateReadOnlyLayer(imageName)  //新建busybox 文件夹，将busybox.tar 解压到 busybox 目录下，作为容器的只读层
+	//为每个容器创建出一个可写层
 	CreateWriteLayer(containerName)    //创建了一个名为 writeLayer　的文件夹，　作为容器唯一的可写层
+	//创建容器的根目录，然后把镜像层的只读层和容器读写层挂载到容器根目录，成为容器的文件系统
 	CreateMountPoint(containerName, imageName) //创建了mnt 文件，作为挂载点，然后啊writeLayer目录和busybox 目录mount 到 mnt 目录下
 
 	if volume != "" {
@@ -26,6 +29,7 @@ func NewWorkSpace(volume string, imageName string, containerName string){
 
 		if length == 2 && volumeURLs[0] != "" && volumeURLs[1] != "" {
 
+			//根据用户输入的volume参数获取相应要挂载的宿主机数据卷URL和容器中的挂载点URL，并挂载数据卷。
 			MountVolume(volumeURLs, containerName)
 			log.Infof("newworkspace %q", volumeURLs)
 		}else {
@@ -99,6 +103,7 @@ func CreateMountPoint(containerName string, imageName string) error {
 	dirs := "dirs=" + tmpWriteLayer + ":" + tmpImageLocation
 
 	fmt.Println("dirs = ", dirs, " mntURL = ", mntURL)
+	//把通过镜像解压出来的只读层和容器的可读写层用aufs联合挂载称为容器的文件系统。
 	_, err := exec.Command("mount", "-t", "aufs", "-o", dirs, "none", mntURL).CombinedOutput()
 	if err != nil {
 
