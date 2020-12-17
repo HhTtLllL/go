@@ -6,6 +6,8 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"io/ioutil"
 	"os"
+	"strconv"
+	"syscall"
 	"text/tabwriter"
 	"ttdocker/container"
 )
@@ -28,7 +30,6 @@ func ListContainers(){
 			log.Errorf("Flush error %v", err)
 			return
 		}
-		//log.Errorf("Read idr %s error %v", dirURL, err)
 		return
 	}
 
@@ -40,6 +41,13 @@ func ListContainers(){
 		if err != nil {
 
 			log.Errorf("Get container info error %v", err)
+			continue
+		}
+
+		pid, _ := strconv.Atoi(tmpContainer.Pid)
+		if !checkPid(pid) && pid != 0 {
+
+			deleteContainerInfo(tmpContainer.Name)
 			continue
 		}
 
@@ -97,4 +105,22 @@ func getContainerInfo(file os.FileInfo) (* container.ContainerInfo, error) {
 	}
 
 	return &containerInfo, nil
+}
+
+func checkPid(pid int) bool {
+	process, err := os.FindProcess(pid)
+	if err != nil {
+		log.Printf("Unable to find the process %d", pid)
+		return false
+	}
+
+	err = process.Signal(syscall.Signal(0))
+	if err != nil {
+	//	log.Printf("Process %d is dead!", pid)
+		return false
+	} else {
+	//	log.Printf("Process %d is alive!", pid)
+		return true
+	}
+	// return true
 }
