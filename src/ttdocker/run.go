@@ -15,9 +15,6 @@ import (
 	"time"
 )
 
-
-
-
 func Run(tty bool, comArray []string, res *subsystems.ResourceConfig, volume, containerName , imageName string, envSlice []string, nw string, portmapping []string){
 
 	containerID := randStringBytes(10)
@@ -43,8 +40,6 @@ func Run(tty bool, comArray []string, res *subsystems.ResourceConfig, volume, co
 	}
 
 	//记录容器信息
-	//fmt.Println("开始记录容器信息")
-	//fmt.Println("comarray = ", comArray)
 	containerName, err := recordContainerInfo(parent.Process.Pid, comArray, containerName, containerID, volume)
 	if err != nil {
 
@@ -82,10 +77,6 @@ func Run(tty bool, comArray []string, res *subsystems.ResourceConfig, volume, co
 
 	//对容器设置完限制之后，初始化容器
 	//发送用户命令
-/*
-	mntURL := "/root/mnt"
-	rootURL := "/root/"
-*/
 	sendInitCommand(comArray, writePipe)
 	//　阻塞在这
 	if tty {
@@ -94,13 +85,6 @@ func Run(tty bool, comArray []string, res *subsystems.ResourceConfig, volume, co
 		deleteContainerInfo(containerName)
 		container.DeleteWorkSpace(volume,containerName)
 	}
-
-	/*
-	mntURL := "/root/mnt"
-	rootURL := "/root/"
-	//退出前删除对应的目录
-	os.Exit(0)
-*/
 }
 
 func sendInitCommand(comArray []string, writePipe *os.File){

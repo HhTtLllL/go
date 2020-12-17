@@ -40,7 +40,6 @@ func NewParentProcess(tty bool, volume string, containerName string, imageName s
 		log.Errorf("new pipe error %v",err)
 		return nil, nil
 	}
-//	args := []string{"init", command}
 	cmd := exec.Command("/proc/self/exe", "init")
 	//fork 出一个新进程
 	//在cmd.Run 的时候，会调用系统调用的 clone()。
@@ -71,6 +70,7 @@ func NewParentProcess(tty bool, volume string, containerName string, imageName s
 		stdLogFilePath := dirURL + ContainerLogFile
 		stdLogFile, err := os.Create(stdLogFilePath)
 		if err != nil {
+
 			log.Errorf("newParentProcess create file %s error %v", stdLogFilePath, err)
 			return nil, nil
 		}

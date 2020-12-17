@@ -39,14 +39,6 @@ func main(){
 		return nil
 	}
 
-	/*
-	app.After = func(c *cli.Context) error {
-
-		fmt.println(" app after");
-		return nil
-	}
-	*/
-
 	//运行app run
 	if err := app.Run(os.Args); err!= nil {
 
