@@ -20,7 +20,15 @@ func ListContainers(){
 	files, err := ioutil.ReadDir(dirURL)
 	if err != nil {
 
-		log.Errorf("Read idr %s error %v", dirURL, err)
+		w := tabwriter.NewWriter(os.Stdout, 12, 1, 3, ' ', 0)
+		//控制台输出的信息列
+		fmt.Fprint(w, "ID\tNAME\tPID\tSTATUS\tCOMMAND\tCREATED\n")
+		if err := w.Flush(); err != nil {
+
+			log.Errorf("Flush error %v", err)
+			return
+		}
+		//log.Errorf("Read idr %s error %v", dirURL, err)
 		return
 	}
 
